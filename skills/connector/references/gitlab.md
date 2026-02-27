@@ -15,7 +15,7 @@ brew install glab
 ```
 
 Homebrew가 설치되어 있지 않은 경우 (brew 명령이 없는 경우):
-- 먼저 [Homebrew 공식 사이트](https://brew.sh)에서 설치 방법을 안내한다.
+- 먼저 [Homebrew 공식 사이트](https://brew.sh) 에서 설치 방법을 안내한다.
 
 ### Windows
 
@@ -37,7 +37,7 @@ Bash로 아래 명령을 실행하여 설치를 확인한다:
 glab --version
 ```
 
-설치 실패 시: 패키지 매니저 문제를 확인하고, 필요하면 [glab Release 페이지](https://gitlab.com/gitlab-org/cli/-/releases)에서 직접 다운로드를 안내한다.
+설치 실패 시: 패키지 매니저 문제를 확인하고, 필요하면 [glab Release 페이지](https://gitlab.com/gitlab-org/cli/-/releases) 에서 직접 다운로드를 안내한다.
 
 ## GitLab PAT 토큰 발급
 
