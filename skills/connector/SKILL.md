@@ -339,16 +339,7 @@ state.json의 `connector.first_completed_at` 값으로 판단한다.
    - `connected_services`에는 이번에 테스트 성공한 서비스 + installing 상태에 이미 기록되어 있던 `connected_services`를 합치고 **중복을 제거**한다. (installing 상태가 없었다면 테스트 성공한 서비스만 포함)
    - 파일이 이미 존재하면 기존 내용을 보존하고 `connector` 키만 업데이트한다.
 
-2. 출력 스타일 전환을 안내한다:
-
-   ```
-   🎓 자동화를 시작하기 전에, 더 자세한 설명과 함께 진행할 수 있도록
-   출력 스타일을 변경해볼까요?
-
-   👉 /output-style 을 입력하고 Explanatory를 선택하세요!
-   ```
-
-3. 자동화 스킬을 제안한다:
+2. 자동화 스킬을 제안한다:
 
    ```
    💡 연결된 도구로 바로 업무 자동화를 만들어볼까요?
