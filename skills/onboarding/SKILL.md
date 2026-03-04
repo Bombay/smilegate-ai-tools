@@ -19,7 +19,7 @@ user-invocable: true
 ```
 상태 확인 → Step 1 직군 확인 → Step 2 기본 정보 수집 → Step 3 CLAUDE.md 생성
 → Step 4 세션/대화 개념 → Step 5 프로젝트 개념 → Step 6 output-style (비개발자만)
-→ Step 7 유용한 팁 → 완료 + connector/automation 안내
+→ Step 7 유용한 팁 → 완료 + connector 안내
 ```
 
 **링크 출력 규칙**: 모든 URL은 코드 블록 밖에서 마크다운 링크 형식 `[텍스트](URL)` 으로 표시한다. 코드 블록 안에 URL을 절대 넣지 않는다. **링크 닫는 괄호 `)` 뒤에 반드시 공백을 한 칸 넣는다.** 예: `[페이지](URL) 에서` (O) / `[페이지](URL)에서` (X)
