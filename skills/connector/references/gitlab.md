@@ -15,7 +15,7 @@ brew install glab
 ```
 
 Homebrew가 설치되어 있지 않은 경우 (brew 명령이 없는 경우):
-- 먼저 [Homebrew 공식 사이트](https://brew.sh)에서 설치 방법을 안내한다.
+- 먼저 [Homebrew 공식 사이트](https://brew.sh) 에서 설치 방법을 안내한다.
 
 ### Windows
 
@@ -37,7 +37,7 @@ Bash로 아래 명령을 실행하여 설치를 확인한다:
 glab --version
 ```
 
-설치 실패 시: 패키지 매니저 문제를 확인하고, 필요하면 [glab Release 페이지](https://gitlab.com/gitlab-org/cli/-/releases)에서 직접 다운로드를 안내한다.
+설치 실패 시: 패키지 매니저 문제를 확인하고, 필요하면 [glab Release 페이지](https://gitlab.com/gitlab-org/cli/-/releases) 에서 직접 다운로드를 안내한다.
 
 ## GitLab PAT 토큰 발급
 
@@ -48,7 +48,7 @@ glab --version
 
 ② "Add new token" 버튼 클릭 → 이름 입력 (예: "Claude Code 연동용")
 
-③ ⚠️ "만료 날짜" 옵션에서 **자동 만료를 해제**하는 것을 권장합니다
+③ ⚠️ "만료 날짜" 옵션에서 **자동 만료를 해제**하는 것을 권장합니다. 해제가 불가능한 경우 가능한 가장 긴 기간을 설정하세요
 
 ④ **권한(Scopes)** 선택:
    - `api` ✅ (필수)
@@ -62,7 +62,7 @@ glab --version
 AskUserQuestion으로 토큰을 입력받는다:
 - question: "발급받은 GitLab PAT 토큰을 붙여넣어 주세요"
 - options: [
-    {label: "발급하고 복사했어요", description: "3번 입력란에 바로 붙여넣어주세요"},
+    {label: "발급하고 복사했어요", description: "아래 입력란에 바로 붙여넣어주세요"},
     {label: "발급 절차를 다시 안내해주세요", description: "토큰 발급 방법을 처음부터 안내합니다"}
   ]
 - 사용자가 Other(3번)를 선택하여 텍스트를 입력하면, 입력값을 토큰으로 처리한다.

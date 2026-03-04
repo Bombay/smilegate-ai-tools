@@ -40,7 +40,7 @@ triggers:
 
 이 스킬이 트리거되면 **가장 먼저 state.json을 확인**하여 분기한다.
 
-**링크 출력 규칙**: 모든 URL은 코드 블록 밖에서 마크다운 링크 형식 `[텍스트](URL)` 으로 표시한다. 코드 블록 안에 URL을 절대 넣지 않는다. 코드 블록 안의 URL은 클릭이 불가능하고 줄바꿈이 발생할 수 있다. 단, JSON 설정 예시의 URL 값은 설정값이므로 코드 블록 안에 표기한다.
+**링크 출력 규칙**: 모든 URL은 코드 블록 밖에서 마크다운 링크 형식 `[텍스트](URL)` 으로 표시한다. 코드 블록 안에 URL을 절대 넣지 않는다. 코드 블록 안의 URL은 클릭이 불가능하고 줄바꿈이 발생할 수 있다. 단, JSON 설정 예시의 URL 값은 설정값이므로 코드 블록 안에 표기한다. **링크 뒤에 한글 조사나 글자가 바로 붙으면 링크에 포함되어 404가 발생**하므로, 링크 닫는 괄호 `)` 뒤에 반드시 **공백을 한 칸** 넣는다. 예: `[페이지](URL) 에서` (O) / `[페이지](URL)에서` (X)
 
 ### 상태 확인 및 분기
 
@@ -64,20 +64,31 @@ triggers:
 
 1. pending_services에 있는 서비스들의 도구가 로드되었는지 ToolSearch로 확인한다.
 2. **도구가 로드됨** → 바로 "연결 테스트" 단계로 이동. pending_services에 있는 서비스만 테스트한다.
-3. **도구가 로드되지 않음** → 재시작이 아직 안 된 상태. 아래 메시지를 다시 출력한다:
+3. **도구가 로드되지 않음** → 재시작이 아직 안 됐거나, 설정 오류로 MCP가 로드되지 않은 상태. AskUserQuestion으로 상황을 확인한다:
+   - question: "MCP 도구가 아직 로드되지 않았어요. 재시작을 이미 하셨나요?"
+   - options: [
+       {label: "아직 안 했어요", description: "재시작 방법을 안내해드릴게요"},
+       {label: "이미 재시작했어요", description: "설정을 다시 확인해볼게요"}
+     ]
 
-   아직 재시작이 완료되지 않았어요!
+   **"아직 안 했어요" 선택 시** — 아래 재시작 안내를 출력한다:
 
    **1단계: Claude Code 종료**
    - Mac / Linux: `Ctrl+D` 누르기
    - Windows: `exit` 입력
 
-   **2단계: 다시 시작**
-   - 터미널에서 `claude` 입력
+   **2단계: Claude Code 다시 시작**
+   - 터미널(명령어 입력 창)에서 `claude` 입력
 
    **3단계: 아래 명령어를 그대로 입력**
 
    > /connector
+
+   **"이미 재시작했어요" 선택 시** — MCP 설정 오류 가능성이 높다. 아래 순서로 트러블슈팅한다:
+   1. Read 도구로 `~/.claude.json`을 읽어 pending_services에 해당하는 MCP 설정이 올바른지 확인한다 (키 존재 여부, URL, 헤더 형식 등).
+   2. 문제가 발견되면 사용자에게 알리고 설정을 수정한다.
+   3. 문제가 발견되지 않으면 네트워크(사내망/VPN) 상태를 확인하도록 안내한다.
+   4. 해결되면 다시 재시작을 안내한다. 진전이 없으면 → [트러블슈팅 및 이슈 등록](references/troubleshoot.md) 절차에 따라 GitHub 이슈 등록을 제안한다.
 
 **케이스 C: `connector.status` = `"completed"` → 재방문**
 
@@ -85,14 +96,14 @@ triggers:
 
 ```
 진단 → (connected_services 1개 이상 & 모두 ✅) → "기존 연결이 모두 정상입니다" + 추가 설정 여부 질문
-     → (connected_services 없음 또는 ⚠️/❌ 있음) → 서비스 선택 → 서비스별 설정 → 재시작(필요 시) → 연결 테스트 → 완료 리포트
+     → (connected_services 없음 또는 ⚠️/❌ 있음) → 서비스 선택 → 서비스별 설정 → 재시작(필요 시) → 연결 테스트 → 완료 리포트 (자동화 제안 없음)
 ```
 
 빠른 종료 조건 충족 시:
 1. "기존 연결(Slack, Jira …)이 모두 정상입니다!"를 출력한다. (실제 서비스명 나열)
 2. AskUserQuestion으로 "추가로 설정할 서비스가 있나요?"를 묻는다.
-   - "네" → ❌ 미연결 서비스만 서비스 선택으로 이동
-   - "아니요" → 종료
+   - "네" → 진단 결과 테이블을 다시 표시하고, ⚠️/❌ 상태의 서비스만 서비스 선택으로 이동
+   - "아니요" → state.json을 변경하지 않고 종료
 
 > `connected_services`가 없거나 빈 배열인 경우(레거시 형식 등)는 빠른 종료를 건너뛰고 일반 진단 흐름으로 진행한다.
 
@@ -113,7 +124,7 @@ triggers:
 4. ToolSearch로 `+biskit check_auth` 검색 → BISKIT MCP 존재 여부 확인. 도구가 있으면 `mcp__biskit-report-mcp__check_auth_status()` 호출로 실제 연결 확인
 5. ToolSearch로 `+apidocs search` 검색 → API Docs MCP 존재 여부 확인. 도구가 있으면 연결됨 (인증 불필요이므로 도구 존재 = 연결 성공)
 6. Bash로 `glab auth status --hostname git.sginfra.net 2>&1` 실행 → GitLab CLI 인증 상태 확인. 명령이 없으면 glab 미설치
-7. ToolSearch로 `+amplitude` 검색 → Amplitude MCP 존재 여부 확인. 도구가 있으면 설정 완료 (OAuth는 사용 시 자동 처리이므로 도구 존재 = 추가 작업 불필요)
+7. ToolSearch로 `+amplitude` 검색 → Amplitude MCP 존재 여부 확인. 도구가 있으면 ✅ 연결됨으로 표시한다. (OAuth 인증은 도구를 실제 사용할 때 자동으로 처리되므로, 진단 단계에서는 `get_context()` 호출 없이 도구 존재 여부만 확인한다. 호출 시 브라우저 OAuth 팝업이 뜰 수 있어 진단에 부적합하다.)
 
 진단 결과를 테이블로 보여준다:
 
@@ -180,13 +191,15 @@ triggers:
 
 #### Jira/Confluence 공통 사용자 ID
 
-Jira와 Confluence를 모두 선택한 경우, 사용자 ID는 **한 번만** 입력받는다:
+Jira와 Confluence를 모두 선택한 경우, 사용자 ID는 **한 번만** 입력받는다.
+
+> **재연결(⚠️)** 시: 먼저 `~/.claude.json`의 기존 MCP 설정에서 사용자 ID를 읽는다. 기존 ID가 있으면 "기존 사용자 ID({기존ID})를 그대로 사용할까요?"로 확인하고, 사용자가 변경을 원할 때만 새로 입력받는다.
 - question: "사용자 ID를 입력해주세요 (Jira/Confluence 공통, 예: hyuntkim)"
 - options: [
     {label: "직접 입력하기", description: "사용자 ID를 입력하세요"},
     {label: "잘 모르겠어요", description: "Jira 또는 Confluence에 로그인할 때 사용하는 ID입니다"}
   ]
-- "잘 모르겠어요" 선택 시: [Jira 프로필 페이지](https://jira.smilegate.net/secure/ViewProfile.jspa) 또는 [Confluence 프로필 페이지](https://wiki.smilegate.net/users/viewmyprofile.action)에서 사용자 이름을 확인할 수 있다고 안내한 뒤, 다시 입력을 요청한다.
+- "잘 모르겠어요" 선택 시: [Jira 프로필 페이지](https://jira.smilegate.net/secure/ViewProfile.jspa) 또는 [Confluence 프로필 페이지](https://wiki.smilegate.net/users/viewmyprofile.action) 에서 사용자 이름을 확인할 수 있다고 안내한 뒤, 다시 입력을 요청한다.
 
 #### MCP 설정 파일 일괄 업데이트
 
@@ -244,7 +257,7 @@ state.json 저장 후 아래 메시지를 출력한다:
 - Windows: `exit` 입력
 
 **2단계: Claude Code 다시 시작**
-- 터미널에서 `claude` 입력
+- 터미널(명령어 입력 창)에서 `claude` 입력
 
 **3단계: 아래 명령어를 그대로 입력**
 
@@ -262,6 +275,8 @@ state.json 저장 후 아래 메시지를 출력한다:
 2. **일반 흐름 (재시작 불필요 또는 같은 세션 내)**: 선택한 서비스를 **모두** 테스트한다.
 
 각 서비스의 연결 테스트 방법은 해당 가이드를 참조한다.
+
+> **Amplitude 테스트 시**: 가이드에 명시된 "테스트 전 안내" 메시지를 반드시 먼저 출력한다. 처음 사용 시 브라우저에서 OAuth 로그인 화면이 자동으로 열리므로, 사전 안내 없이 테스트하면 사용자가 당황할 수 있다.
 
 연결 실패 시 트러블슈팅 → [references/troubleshoot.md](references/troubleshoot.md)
 
@@ -321,19 +336,10 @@ state.json의 `connector.first_completed_at` 값으로 판단한다.
    }
    ```
    - `pending_services`는 제거한다 (더 이상 대기 중인 서비스가 없으므로).
-   - `connected_services`에는 이번에 테스트 성공한 서비스 + 기존에 이미 연결되어 있던 서비스를 모두 포함하고 **중복을 제거**한다.
+   - `connected_services`에는 이번에 테스트 성공한 서비스 + installing 상태에 이미 기록되어 있던 `connected_services`를 합치고 **중복을 제거**한다. (installing 상태가 없었다면 테스트 성공한 서비스만 포함)
    - 파일이 이미 존재하면 기존 내용을 보존하고 `connector` 키만 업데이트한다.
 
-2. 출력 스타일 전환을 안내한다:
-
-   ```
-   🎓 자동화를 시작하기 전에, 더 자세한 설명과 함께 진행할 수 있도록
-   출력 스타일을 변경해볼까요?
-
-   👉 /output-style 을 입력하고 Explanatory를 선택하세요!
-   ```
-
-3. 자동화 스킬을 제안한다:
+2. 자동화 스킬을 제안한다:
 
    ```
    💡 연결된 도구로 바로 업무 자동화를 만들어볼까요?
@@ -342,22 +348,22 @@ state.json의 `connector.first_completed_at` 값으로 판단한다.
    대화만으로 자동화 스킬로 만들 수 있어요.
 
    ① 좋아요, 만들어볼래요 → automation 스킬의 Phase 1부터 시작
-   ② 나중에 할게요 → 종료 (나중에 "자동화 만들기"로 실행 가능)
+   ② 나중에 할게요 → 종료 (나중에 "스킬 만들어줘"로 실행 가능)
    ```
 
    AskUserQuestion으로 선택을 받는다.
    - ① 선택 시: automation 스킬의 Phase 1부터 실행 (Phase 0 건너뜀, 연결 상태를 이미 알고 있으므로)
-   - ② 선택 시: "나중에 만들고 싶으면 '자동화 만들기'라고 말하면 돼요!" 안내 후 종료
+   - ② 선택 시: "나중에 만들고 싶으면 '스킬 만들어줘'라고 말하면 돼요!" 안내 후 종료
 
 **케이스 2: 첫 실행 + 연결 성공 서비스 0개**
 
-state.json에서 `connector` 키를 **제거**한다. 이렇게 하면 다음 `/connector` 실행 시 케이스 A(신규)로 돌아가서 처음부터 진행할 수 있다. `connector` 키를 제거하지 않으면, `installing` 상태가 유지되어 케이스 B가 반복되는 무한 루프가 발생한다.
+state.json에서 `connector` 키를 **제거**한다 (키가 이미 없으면 아무 작업 없이 진행한다). 이렇게 하면 다음 `/connector` 실행 시 케이스 A(신규)로 돌아가서 처음부터 진행할 수 있다. `connector` 키를 제거하지 않으면, `installing` 상태가 유지되어 케이스 B가 반복되는 무한 루프가 발생한다.
 
 완료 리포트와 트러블슈팅 안내를 출력하고 종료한다.
 
-**케이스 3: 재실행 (케이스 C에서 진입)**
+**케이스 3: 재실행 (`first_completed_at`이 이미 존재)**
 
-state.json을 업데이트하고, 자동화 제안은 건너뛴다. 완료 리포트만 출력하고 종료한다.
+이전에 한 번 이상 완료한 사용자다. state.json을 업데이트하고, 자동화 제안은 건너뛴다. 완료 리포트만 출력하고 종료한다.
 
 **케이스 3-a: 연결 성공 서비스 1개 이상**
 

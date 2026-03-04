@@ -52,7 +52,7 @@ Slack은 가장 쉽다. 브라우저에서 클릭 몇 번이면 끝.
 Slack 연결에 문제가 있을 때 확인할 것:
 1. Claude Code에서 로그인한 계정과 claude.ai 계정이 동일한지 확인
 2. 회사 Slack 워크스페이스 관리자가 앱 설치를 승인했는지 확인
-3. 브라우저에서 [Slack Connectors 설정 페이지](https://claude.ai/settings/connectors)에 Slack이 "연결됨"으로 표시되는지 확인
+3. 브라우저에서 [Slack Connectors 설정 페이지](https://claude.ai/settings/connectors) 에 Slack이 "연결됨"으로 표시되는지 확인
 4. Claude Code를 재시작했는지 확인
 
 트러블슈팅이 진전 없이 막히면 → [트러블슈팅 및 이슈 등록](troubleshoot.md) 절차에 따라 GitHub 이슈 등록을 제안한다.

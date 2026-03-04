@@ -22,8 +22,10 @@ claude plugin install smilegate-ai-tools@smilegate-marketplace
 
 | 스킬 | 설명 | 트리거 |
 |------|------|--------|
+| onboarding | Claude Code 환경 셋업 (정보 등록, CLAUDE.md 생성, 사용법) | `/onboarding`, "시작하기" |
 | connector | Slack, Jira, Confluence, BISKIT, API Docs, GitLab 연결 설정 | "커넥터 설정해줘", "jira 연결해줘" |
-| automation | 반복 업무를 대화로 자동화 스킬 생성 | "자동화 만들기", "업무 자동화" |
+| skill-creator | 나만의 스킬 만들기 (인터뷰 → 스킬 파일 자동 생성) | `/skill-creator`, "스킬 만들어줘" |
+| automation | 반복 업무를 대화로 자동화 체험 | "자동화 만들기", "업무 자동화" |
 
 ## 참고
 

@@ -96,6 +96,6 @@ EOF
 1. Claude Code를 재시작했는지 (설정 변경 후 재시작 필수)
 2. 토큰이 올바르게 복사되었는지 (설정 파일에서 mcpServers 직접 확인)
 3. 사용자 ID가 맞는지 (Jira/Confluence 프로필에서 확인)
-4. BISKIT 토큰 앞에 "Bearer "가 포함되어 있는지 (공백 1개 필수)
+4. BISKIT 설정에서 Authorization 헤더가 `"Bearer {토큰}"` 형식인지 확인 (Bearer + 공백 1개 + 토큰). 토큰이 이중으로 `"Bearer Bearer ..."` 이 되어 있지 않은지 확인
 5. 네트워크에서 mcp.sginfra.net 접근이 가능한지 (사내망 또는 VPN 필요)
 6. Windows의 경우 %USERPROFILE%\.claude.json 경로가 맞는지 확인
