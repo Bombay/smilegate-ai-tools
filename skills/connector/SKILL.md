@@ -63,8 +63,18 @@ triggers:
 이전에 설정을 완료하고 재시작을 안내받은 사용자가 돌아왔다. `connector.pending_services` 목록을 확인하여 연결 테스트를 진행한다.
 
 1. pending_services에 있는 서비스들의 도구가 로드되었는지 ToolSearch로 확인한다.
-   - **Amplitude 예외**: Amplitude는 OAuth 인증 전에는 ToolSearch에 도구가 나타나지 않을 수 있다. Amplitude가 pending_services에 있으면, ToolSearch 결과와 무관하게 Read 도구로 `~/.claude.json`에 amplitude MCP 설정이 존재하는지 확인한다. 설정이 존재하면 "도구 로드됨"과 동일하게 연결 테스트 단계로 포함시킨다.
-2. **도구가 로드됨** (또는 Amplitude 설정 존재) → 바로 "연결 테스트" 단계로 이동. pending_services에 있는 서비스만 테스트한다.
+   - **Amplitude 예외**: Amplitude는 OAuth 인증을 완료해야 도구가 로드된다. Amplitude가 pending_services에 있고 ToolSearch에 도구가 나타나지 않으면, Read 도구로 `~/.claude.json`에 amplitude MCP 설정이 존재하는지 확인한다. 설정이 존재하면 OAuth 인증이 아직 안 된 것이므로 아래 안내를 출력한다:
+     ```
+     Amplitude는 로그인이 필요해요! 아래 순서대로 진행해주세요.
+
+     1. `/mcp` 를 입력하세요
+     2. 목록에서 `amplitude` 를 선택하세요
+     3. "Authenticate" 를 선택하세요
+     4. 브라우저에서 Amplitude 로그인을 완료하세요
+     5. 완료되면 "완료" 라고 말해주세요
+     ```
+     안내 출력 후 나머지 pending_services의 연결 테스트를 먼저 진행한다. 사용자가 "완료"라고 하면 Amplitude 연결 테스트를 이어서 진행한다.
+2. **도구가 로드됨** → 바로 "연결 테스트" 단계로 이동. pending_services에 있는 서비스만 테스트한다.
 3. **모든 서비스의 도구가 로드되지 않음** (Amplitude도 설정 미존재) → 재시작이 아직 안 됐거나, 설정 오류로 MCP가 로드되지 않은 상태. AskUserQuestion으로 상황을 확인한다:
    - question: "MCP 도구가 아직 로드되지 않았어요. 재시작을 이미 하셨나요?"
    - options: [
@@ -125,7 +135,7 @@ triggers:
 4. ToolSearch로 `+biskit check_auth` 검색 → BISKIT MCP 존재 여부 확인. 도구가 있으면 `mcp__biskit-report-mcp__check_auth_status()` 호출로 실제 연결 확인
 5. ToolSearch로 `+apidocs search` 검색 → API Docs MCP 존재 여부 확인. 도구가 있으면 연결됨 (인증 불필요이므로 도구 존재 = 연결 성공)
 6. Bash로 `glab auth status --hostname git.sginfra.net 2>&1` 실행 → GitLab CLI 인증 상태 확인. 명령이 없으면 glab 미설치
-7. ToolSearch로 `+amplitude` 검색 → Amplitude MCP 존재 여부 확인. 도구가 있으면 ✅ 연결됨으로 표시한다. (OAuth 인증은 도구를 실제 사용할 때 자동으로 처리되므로, 진단 단계에서는 `get_context()` 호출 없이 도구 존재 여부만 확인한다. 호출 시 브라우저 OAuth 팝업이 뜰 수 있어 진단에 부적합하다.)
+7. ToolSearch로 `+amplitude` 검색 → 도구가 나타나면 `mcp__amplitude__get_context()` 호출로 실제 연결 확인. 도구가 나타나지 않으면 Read 도구로 `~/.claude.json`에 amplitude MCP 설정 존재 여부를 확인한다. 설정 존재 + 도구 미로드 → ⚠️ 인증 필요 (OAuth 미완료 상태). 설정 미존재 → ❌ 미연결.
 
 진단 결과를 테이블로 보여준다:
 
@@ -137,12 +147,13 @@ triggers:
 | BISKIT | ✅ 연결됨 / ⚠️ 재연결 필요 / ❌ 미연결 |
 | API Docs | ✅ 연결됨 / ❌ 미연결 |
 | GitLab | ✅ 연결됨 / ⚠️ 재연결 필요 / ❌ 미연결 |
-| Amplitude | ✅ 연결됨 / ❌ 미연결 |
+| Amplitude | ✅ 연결됨 / ⚠️ 인증 필요 / ❌ 미연결 |
 
 - ✅ 연결됨: 도구 존재 + 연결 테스트 성공 (GitLab은 glab 설치 + 인증 완료)
 - ⚠️ 재연결 필요: 도구는 존재하지만 연결 테스트 실패 (토큰 만료 등). GitLab은 glab 설치됨 + 인증 실패
+- ⚠️ 인증 필요 (Amplitude 전용): MCP 설정은 존재하지만 OAuth 인증이 완료되지 않아 도구가 로드되지 않은 상태
 - ❌ 미연결: 도구 자체가 없음 (MCP 설정 없음). GitLab은 glab 미설치
-- Slack, API Docs, Amplitude는 수동 토큰 관리가 불필요하므로 ✅(연결됨)과 ❌(미연결) 두 가지 상태만 존재한다.
+- Slack, API Docs는 수동 토큰 관리가 불필요하므로 ✅(연결됨)과 ❌(미연결) 두 가지 상태만 존재한다.
 
 이미 연결된 서비스(✅)는 건너뛴다. ⚠️ 또는 ❌ 상태의 서비스만 설정을 진행한다.
 전체 7개 서비스가 모두 ✅이면 "모든 서비스가 연결되어 있습니다!"를 출력하고 기본 사용법을 안내한 뒤 종료한다.
