@@ -78,7 +78,7 @@ triggers:
    - Windows: `exit` 입력
 
    **2단계: Claude Code 다시 시작**
-   - 터미널에서 `claude` 입력
+   - 터미널(명령어 입력 창)에서 `claude` 입력
 
    **3단계: 아래 명령어를 그대로 입력**
 
@@ -257,7 +257,7 @@ state.json 저장 후 아래 메시지를 출력한다:
 - Windows: `exit` 입력
 
 **2단계: Claude Code 다시 시작**
-- 터미널에서 `claude` 입력
+- 터미널(명령어 입력 창)에서 `claude` 입력
 
 **3단계: 아래 명령어를 그대로 입력**
 

@@ -31,7 +31,7 @@ user-invocable: true
 ## automation 스킬과의 차이
 
 - **automation**: 연결된 도구를 활용한 "자동화 체험"에 집중. 워크플로우를 실행해보고, 원하면 스킬로 저장.
-- **skill-creator**: "스킬 파일 생성" 자체에 집중. 더 구조적인 인터뷰와 설계 확인을 거쳐, 품질 높은 스킬 파일을 만든다.
+- **skill-creator**: "스킬 생성" 자체에 집중. 더 구조적인 인터뷰와 설계 확인을 거쳐, 품질 높은 스킬 파일을 만든다.
 
 사용자가 "자동화 만들기"를 원하면 automation, "스킬 만들기"를 원하면 이 스킬을 사용한다.
 
@@ -65,7 +65,7 @@ Phase 0 → Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5
      도구를 연결하면 훨씬 강력한 스킬을 만들 수 있어요.
      ```
      AskUserQuestion: "도구 연결 후에 만들래요" / "도구 없이 만들래요"
-     - 도구 연결 → 종료하고 connector 안내
+     - 도구 연결 → "도구를 연결하고 나면, '스킬 만들어줘'라고 다시 말하면 돼요!" 안내 후 종료
      - 도구 없이 → Phase 1로 진행
 
 ---
@@ -98,7 +98,7 @@ Phase 0 → Phase 1 → Phase 2 → Phase 3 → Phase 4 → Phase 5
 > - Jira+Confluence: "Jira 티켓을 정리해서 주간보고 위키에 작성", "스프린트 리뷰 자료 생성"
 > - Slack+Confluence: "Slack 대화를 위키 회의록으로 정리", "채널 논의 요약"
 > - Jira+Slack: "Jira 현황을 Slack에 공유", "Slack 논의를 Jira 티켓으로 변환"
-> - 도구 없음: "데이터 정리", "보고서 작성", "파일 변환"
+> - 도구 없음: "매주 보내는 이메일 본문 작성", "회의 안건 정리", "일일 업무 체크리스트"
 
 AskUserQuestion으로 답변을 받는다.
 
@@ -175,7 +175,7 @@ AskUserQuestion: "좋아요" / "수정할래요"
 생성 위치: `skills/{스킬명}/SKILL.md`
 
 **작성 원칙:**
-- frontmatter: name, description, triggers 포함
+- frontmatter: name, description, triggers 포함 (triggers는 스킬명, 띄어쓰기 변형, "~해줘" 변형 등 최소 3개 자동 생성. `user-invocable: true` 기본 설정)
 - description은 third-person 형식 ("This skill should be used when..." 또는 한국어로 설명)
 - 본문은 imperative/infinitive form (동사 시작 지시문)
 - 자연어로 워크플로우 설명 (MCP 함수명 금지)
@@ -212,7 +212,7 @@ AskUserQuestion: "좋아요" / "수정할래요"
 방금 만든 "{스킬명}" 스킬을 테스트해볼게요!
 ```
 
-스킬의 워크플로우를 실제로 실행한다.
+생성된 SKILL.md 파일을 Read 도구로 읽고, 해당 지시에 따라 워크플로우를 실제로 실행한다.
 - 각 단계마다 진행 상황을 표시한다
 - 결과물이 있으면 미리보기를 보여준다
 
@@ -229,6 +229,9 @@ AskUserQuestion: "좋아요" / "수정할래요"
 AskUserQuestion으로 확인.
 - ① → Phase 5
 - ② → 수정 사항 확인 후 스킬 파일 수정 → 다시 테스트
+
+> 수정이 2회 이상 반복되면: "테스트가 잘 안 되고 있네요. 일단 스킬을 저장하고, 나중에 수정할 수도 있어요." 안내 후 "일단 저장하기" / "계속 수정해보기" 중 선택.
+> 도구 연결 문제로 실패하면 connector 안내를 추가로 제공한다.
 
 ---
 
