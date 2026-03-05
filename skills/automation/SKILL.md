@@ -288,15 +288,15 @@ Phase 3 Step 1(스킬 생성)이 완료되면 `~/.claude/skills/smilegate-ai-too
 ```json
 {
   "automation": {
-    "experienced": true,
-    "experience_count": "{기존 값 + 1, 없으면 1}",
-    "last_experienced_at": "{현재 ISO 8601 시각}"
+    "status": "completed",
+    "skill_count": "{기존 값 + 1, 없으면 1}",
+    "last_completed_at": "{현재 ISO 8601 시각}"
   }
 }
 ```
 
 - 파일이 이미 존재하면 기존 내용을 보존하고 `automation` 키만 업데이트한다.
-- `experience_count`: 기존에 `automation.experience_count`가 있으면 +1, 없으면 1로 초기화.
+- `skill_count`: 기존에 `automation.skill_count`가 있으면 +1, 없으면 1로 초기화.
 
 ### Step 3: 추가 스킬 제안
 
