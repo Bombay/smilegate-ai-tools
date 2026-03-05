@@ -236,12 +236,13 @@ triggers:
 Jira와 Confluence를 모두 선택한 경우, 사용자 ID는 **한 번만** 입력받는다.
 
 > **재연결(⚠️)** 시: 먼저 `~/.claude.json`의 기존 MCP 설정에서 사용자 ID를 읽는다. 기존 ID가 있으면 "기존 사용자 ID({기존ID})를 그대로 사용할까요?"로 확인하고, 사용자가 변경을 원할 때만 새로 입력받는다.
-- question: "사용자 ID를 입력해주세요 (Jira/Confluence 공통, 예: hyuntaekim)"
-- options: [
-    {label: "직접 입력하기", description: "사용자 ID를 입력하세요"},
-    {label: "잘 모르겠어요", description: "Jira 또는 Confluence에 로그인할 때 사용하는 ID입니다"}
-  ]
-- "잘 모르겠어요" 선택 시: [Jira 프로필 페이지](https://jira.smilegate.net/secure/ViewProfile.jspa) 또는 [Confluence 프로필 페이지](https://wiki.smilegate.net/users/viewmyprofile.action) 에서 사용자 이름을 확인할 수 있다고 안내한 뒤, 다시 입력을 요청한다.
+아래 메시지를 출력하고 다음 사용자 입력을 사용자 ID로 처리한다:
+
+> 사용자 ID를 입력해주세요 (Jira/Confluence 공통, 예: hyuntaekim)
+> (사용자 ID를 모르시면 "모르겠어요"라고 말해주세요)
+
+- 사용자가 ID처럼 보이는 값을 입력하면 → 사용자 ID로 처리한다.
+- 사용자가 "모르겠어요" / "잘 모르겠어요" 등을 입력하면 → [Jira 프로필 페이지](https://jira.smilegate.net/secure/ViewProfile.jspa) 또는 [Confluence 프로필 페이지](https://wiki.smilegate.net/users/viewmyprofile.action) 에서 사용자 이름을 확인할 수 있다고 안내한 뒤, 다시 입력을 요청한다.
 
 #### MCP 설정 파일 일괄 업데이트
 
