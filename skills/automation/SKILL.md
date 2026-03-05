@@ -31,6 +31,11 @@ Phase 0 → Phase 1 → Phase 2 → Phase 3 → Phase 4
 
 **목적**: 연결된 도구를 파악한다.
 
+Phase 0 시작 시, Read 도구로 `~/.claude/skills/smilegate-ai-tools/state.json`의 `connector` 키를 확인한다.
+
+- `connector.status === "completed"` 또는 `"partial"`: `connected_services` 목록의 서비스만 ToolSearch로 확인한다 (전체 7개 스캔 생략). `failed_services`에 있는 서비스는 즉시 ❌로 표시한다.
+- `connector.status === "error"` 또는 키 없음: 전체 7개 서비스를 직접 스캔한다 (기존 방식).
+
 1. `skills/connector/SKILL.md`의 "연결 대상" 테이블을 참조하여 지원 서비스 목록을 파악한다.
 2. connector의 진단 방법(ToolSearch/Bash)에 따라 각 서비스의 연결 여부를 확인한다.
    - **상태 판별 규칙**: ✅(정상 연결)과 ❌(미연결 또는 사용 불가) 두 가지만 사용한다.
@@ -275,6 +280,23 @@ AskUserQuestion으로 확인.
 🎉 잘 작동해요! 다음부터 "주간보고"라고만 말하면 이 자동화가 실행돼요.
 매주 ~30분 걸리던 작업이 ~1분이면, 연간 약 25시간을 아낄 수 있어요.
 ```
+
+### automation state.json 업데이트
+
+Phase 3 Step 1(스킬 생성)이 완료되면 `~/.claude/skills/smilegate-ai-tools/state.json`의 `automation` 키를 업데이트한다:
+
+```json
+{
+  "automation": {
+    "experienced": true,
+    "experience_count": "{기존 값 + 1, 없으면 1}",
+    "last_experienced_at": "{현재 ISO 8601 시각}"
+  }
+}
+```
+
+- 파일이 이미 존재하면 기존 내용을 보존하고 `automation` 키만 업데이트한다.
+- `experience_count`: 기존에 `automation.experience_count`가 있으면 +1, 없으면 1로 초기화.
 
 ### Step 3: 추가 스킬 제안
 

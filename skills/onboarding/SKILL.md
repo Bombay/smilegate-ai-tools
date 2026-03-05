@@ -60,7 +60,14 @@ user-invocable: true
 
 **케이스 B: `onboarding.status` = `"completed"` → 재방문**
 
-이미 온보딩을 완료한 사용자다. AskUserQuestion으로 원하는 항목을 선택받는다:
+이미 온보딩을 완료한 사용자다.
+
+케이스 B 진입 시, `connector.status`를 확인하여 추가 안내를 출력한다:
+- `connector.status === "partial"`: "일부 도구만 연결된 상태예요 ({connected_services} 연결됨, {failed_services} 미연결). `/connector`로 추가 연결할 수 있어요."
+- `connector.status === "error"`: "도구 연결에 문제가 있었어요. `/connector`로 다시 시도해보세요."
+- `connector.status === "completed"` 또는 키 없음: 추가 안내 없이 기존 옵션 메뉴 표시.
+
+AskUserQuestion으로 원하는 항목을 선택받는다:
 
 - question: "이전에 온보딩을 완료하셨네요! 어떤 걸 도와드릴까요?"
 - options:
