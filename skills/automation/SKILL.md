@@ -256,7 +256,7 @@ AskUserQuestion으로 확인.
 동작: Jira 이번 주 내 티켓 조회 → 상태별 분류 → 위키에 주간보고 작성
 ```
 
-`skills/` 디렉토리에 새 스킬을 생성한다 — `skills/skill-creator/references/skill-guide.md` 참조.
+`skills/` 디렉토리에 새 스킬을 생성한다 — `plugin-dev:skill-development` 스킬의 가이드를 참조하거나, 공식 skill-creator 플러그인이 설치된 경우 해당 스킬을 활용한다.
 
 ### Step 2: 저장 완료 + 즉시 테스트 (와우 포인트 #2)
 
